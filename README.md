@@ -2,6 +2,8 @@
 
 A customizable, keyboard-driven cheat sheet system for QuickShell. Displays your frequently used commands, keybindings, and reference information in a clean, tabbed interface with dynamic sizing and scrollable content.
 
+![demo](https://github.com/ShawnMcCool/quickshell-cheatsheet/blob/master/demo.gif)
+
 ## Features
 
 - **Tabbed Interface**: Organize commands into logical groups
