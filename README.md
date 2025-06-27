@@ -10,27 +10,13 @@ A customizable, keyboard-driven cheat sheet system for QuickShell. Displays your
 - **Dynamic Sizing**: Window automatically sizes to fit content
 - **Scrollable Content**: Long lists scroll smoothly with keyboard controls
 - **Customizable Keybindings**: Configure all navigation keys
-- **Theme Support**: Auto-detect system theme or cycle manually
-- **Flexible Configuration**: Multiple config file locations supported
-- **Portable**: No hardcoded paths, works out-of-the-box
+- **QT Theming**
 
 ## Installation
 
-1. **Copy Files**: Place `CheatSheet.qml` and `shell.qml` in your QuickShell configuration directory
-2. **Copy Config**: Place `cheatsheet.json` in the same directory or customize the path
-3. **Run**: Start QuickShell with your configuration
-
-### Basic Setup
-
-```bash
-# Copy to your QuickShell config directory
-cp CheatSheet.qml ~/.config/quickshell/
-cp shell.qml ~/.config/quickshell/
-cp cheatsheet.json ~/.config/quickshell/
-
-# Start QuickShell
-quickshell
-```
+1. **Copy Files**: Place `CheatSheet.qml` in `.config/quickshell`.
+2. **Add a Config**: Called `cheatsheet.json` in the same directory.
+3. **Trigger from Hyprland**: (or wherever) `bind = $mainMod, grave, global, quickshell:cheatsheet_toggle`
 
 ## Configuration
 
@@ -45,70 +31,7 @@ The cheat sheet automatically searches for `cheatsheet.json` in the following lo
 
 If no config file is found, comprehensive fallback data is used.
 
-## Default Keybindings
-
-### Navigation
-
-- **Escape**: Close cheat sheet
-- **h, A, Left Arrow**: Previous tab
-- **s, D, Right Arrow**: Next tab
-- **n, N**: Scroll up
-- **t, T**: Scroll down
-
-All keybindings are customizable through the `navigation` section in your config file.
-
-## Advanced Usage
-
-### Embedding in Existing Shell
-
-Add to your existing `shell.qml`:
-
-```qml
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import Quickshell 0.1
-import Quickshell.Hyprland 0.1
-
-ShellRoot {
-    Window {
-        id: cheatSheetWindow
-
-        width: cheatSheet.implicitWidth
-        height: cheatSheet.implicitHeight
-        title: "Quickshell Cheatsheet"
-
-        visible: false
-
-        onVisibleChanged: {
-            if (visible) {
-                console.log("CheatSheet window became visible, triggering reload...")
-                cheatSheet.reloadConfig()
-            }
-        }
-
-        CheatSheet {
-            id: cheatSheet
-        }
-    }
-
-    GlobalShortcut {
-        appid: "quickshell"
-        name: "cheatsheet_toggle"
-
-        onPressed: {
-            cheatSheetWindow.visible = !cheatSheetWindow.visible
-        }
-    }
-}
-```
-
-## Dependencies
-
-- QuickShell
-- Qt 5.15+ or Qt 6.0+
-- QtQuick.Controls with Material theme support
-
-## Example Config
+## Example
 
 ```json
 {
@@ -217,3 +140,64 @@ ShellRoot {
     }
 }
 ```
+
+## Default Keybindings
+
+### Navigation
+
+- **Escape**: Close cheat sheet
+- **h, A, Left Arrow**: Previous tab
+- **s, D, Right Arrow**: Next tab
+- **n, N**: Scroll up
+- **t, T**: Scroll down
+
+All keybindings are customizable through the `navigation` section in your config file.
+
+## Embed in Existing Shell
+
+Add to your existing `shell.qml`:
+
+```qml
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import Quickshell 0.1
+import Quickshell.Hyprland 0.1
+
+ShellRoot {
+    Window {
+        id: cheatSheetWindow
+
+        width: cheatSheet.implicitWidth
+        height: cheatSheet.implicitHeight
+        title: "Quickshell Cheatsheet"
+
+        visible: false
+
+        onVisibleChanged: {
+            if (visible) {
+                console.log("CheatSheet window became visible, triggering reload...")
+                cheatSheet.reloadConfig()
+            }
+        }
+
+        CheatSheet {
+            id: cheatSheet
+        }
+    }
+
+    GlobalShortcut {
+        appid: "quickshell"
+        name: "cheatsheet_toggle"
+
+        onPressed: {
+            cheatSheetWindow.visible = !cheatSheetWindow.visible
+        }
+    }
+}
+```
+
+## Dependencies
+
+- QuickShell
+- Qt 5.15+ or Qt 6.0+
+- QtQuick.Controls with Material theme support
