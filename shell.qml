@@ -12,11 +12,26 @@ ShellRoot {
         title: "Quickshell Cheatsheet"
 
         visible: false
+        
+        // Simple persistent property for selected tab
+        property int persistentSelectedTab: 0
 
         onVisibleChanged: {
             if (visible) {
                 console.log("CheatSheet window became visible, triggering reload...")
                 cheatSheet.reloadConfig()
+            } else {
+                // Save current tab when hiding
+                persistentSelectedTab = cheatSheet.getCurrentTab()
+                console.log("Saved selected tab:", persistentSelectedTab)
+            }
+        }
+
+        Connections {
+            target: cheatSheet
+            function onTabsLoaded() {
+                console.log("Received tabsLoaded signal, restoring tab:", cheatSheetWindow.persistentSelectedTab)
+                cheatSheet.restoreSelectedTab(cheatSheetWindow.persistentSelectedTab)
             }
         }
 

@@ -9,6 +9,8 @@ Item {
     id: root
     focus: true
     
+    signal tabsLoaded()
+    
     // Dynamic sizing based on content
     implicitWidth: root.calculatedWidth > 0 ? root.calculatedWidth : 600
     implicitHeight: root.finalHeight > 0 ? root.finalHeight : 400
@@ -184,6 +186,17 @@ Item {
         loadJsonFile()
     }
 
+    function getCurrentTab() {
+        return tabBar.currentIndex
+    }
+
+    function restoreSelectedTab(index) {
+        if (index >= 0 && index < root.tabNames.length) {
+            tabBar.currentIndex = index
+            console.log("Restored tab selection to index:", index)
+        }
+    }
+
     function initializeConfigPaths() {
         // Initialize the list of paths to try, in order of preference
         root.configPaths = []
@@ -299,11 +312,8 @@ Item {
                     // Calculate content dimensions
                     calculateMaxWidths()
                     
-                    // Ensure first tab is properly selected after data loads
-                    if (root.tabNames.length > 0) {
-                        // Use a timer to ensure the TabBar is fully rendered before setting selection
-                        tabSelectionTimer.start()
-                    }
+                    // Signal that tabs are loaded
+                    root.tabsLoaded()
                 } catch (e) {
                     var currentPath = (root.configPaths && root.currentPathIndex < root.configPaths.length) ? 
                                       root.configPaths[root.currentPathIndex] : "unknown"
@@ -334,22 +344,6 @@ Item {
         }
     }
 
-    Timer {
-        id: tabSelectionTimer
-        interval: 100
-        repeat: false
-        onTriggered: {
-            console.log("Setting tab selection, currentIndex before:", tabBar.currentIndex)
-            tabBar.currentIndex = -1  // Reset first
-            tabBar.currentIndex = 0   // Then set to first tab
-            
-            // Force visual update by briefly changing focus
-            tabBar.focus = true
-            tabBar.forceActiveFocus()
-            
-            console.log("Set tab selection, currentIndex after:", tabBar.currentIndex)
-        }
-    }
     
     function calculateMaxWidths() {
         root.maxCmdWidth = 0
@@ -452,10 +446,8 @@ Item {
         // Calculate content dimensions for fallback data
         calculateMaxWidths()
         
-        // Ensure first tab is properly selected
-        if (root.tabNames.length > 0) {
-            tabSelectionTimer.start()
-        }
+        // Signal that tabs are loaded for fallback data too
+        root.tabsLoaded()
     }
 
     Rectangle {
@@ -488,15 +480,6 @@ Item {
                     TabButton {
                         text: modelData
                         
-                        Component.onCompleted: {
-                            // Ensure first tab button is properly styled when created
-                            if (index === 0) {
-                                console.log("First tab button created, forcing parent selection")
-                                Qt.callLater(function() {
-                                    tabBar.currentIndex = 0
-                                })
-                            }
-                        }
                     }
                 }
             }
